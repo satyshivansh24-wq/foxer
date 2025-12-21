@@ -12,8 +12,7 @@
 Foxer is currently in **Early Access**.  
 We are building Foxer with feedback from our first users.
 
-## 🌐 Live App
-👉 https://foxer.vercel.app
+
 
 ## 🛠 Tech Stack
 - React + TypeScript
