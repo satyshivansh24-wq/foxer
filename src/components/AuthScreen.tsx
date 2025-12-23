@@ -160,15 +160,24 @@ export function AuthScreen({ mode, onBack, onToggleMode }: AuthScreenProps) {
               <p className="text-sm text-destructive text-center">{error}</p>
             )}
 
-            <Button
-              type="submit"
-              variant="hero"
-              className="w-full mt-6"
-              disabled={isLoading}
-            >
-              {isLogin && (
-  <p className="mt-3 text-sm text-gray-500 text-center">
-    Forgot your password?{" "}
+           <Button
+  type="submit"
+  variant="hero"
+  className="w-full mt-6"
+  disabled={isLoading}
+>
+  {isLoading ? (
+    <span className="animate-pulse-subtle">
+      {isLogin ? 'Signing in...' : 'Creating account...'}
+    </span>
+  ) : (
+    isLogin ? 'Sign In' : 'Create Account'
+  )}
+</Button>
+
+{isLogin && (
+  <p className="mt-4 text-sm text-gray-500 text-center">
+    Forgot your password?{' '}
     <a
       href="mailto:satyshivansh39@gmail.com?subject=Foxer%20Password%20Help"
       className="text-blue-600 font-medium hover:underline"
@@ -177,6 +186,7 @@ export function AuthScreen({ mode, onBack, onToggleMode }: AuthScreenProps) {
     </a>
   </p>
 )}
+
 
               {isLoading ? (
                 <span className="animate-pulse-subtle">
