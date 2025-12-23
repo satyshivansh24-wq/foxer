@@ -3,7 +3,6 @@ import { SplashScreen } from '@/components/SplashScreen';
 import { WelcomeScreen } from '@/components/WelcomeScreen';
 import { AuthScreen } from '@/components/AuthScreen';
 import { Dashboard } from '@/components/Dashboard';
-// import { ResetPasswordScreen } from '@/components/ResetPasswordScreen';
 import { useAuth } from '@/contexts/AuthContext';
 
 type Screen = 'splash' | 'welcome' | 'login' | 'signup' | 'dashboard';
@@ -13,35 +12,34 @@ const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>('splash');
   const [splashComplete, setSplashComplete] = useState(false);
 
-  // Handle splash screen completion
+  // Splash complete handler
   const handleSplashComplete = () => {
     setSplashComplete(true);
   };
 
-  // Watch for auth state changes after splash
+  // After splash: decide initial screen
   useEffect(() => {
-    if (splashComplete && !loading) {
-      // Check if user is in password reset flow from email link
-      // Parameters can be in hash (#) or query string (?)
-     
-      } else if (user) {
-        setCurrentScreen('dashboard');
-      } else {
-        setCurrentScreen('welcome');
-      }
-    }
-  }, [splashComplete, user, loading]);
+    if (!splashComplete || loading) return;
 
-  // Watch for auth changes when already past splash
-  useEffect(() => {
-    if (splashComplete && !loading) {
-      if (user && currentScreen !== 'dashboard') {
-        setCurrentScreen('dashboard');
-      } else if (!user && currentScreen === 'dashboard') {
-        setCurrentScreen('welcome');
-      }
+    if (user) {
+      setCurrentScreen('dashboard');
+    } else {
+      setCurrentScreen('welcome');
     }
-  }, [user, loading, splashComplete]);
+  }, [splashComplete, loading, user]);
+
+  // Handle auth state changes
+  useEffect(() => {
+    if (!splashComplete || loading) return;
+
+    if (user && currentScreen !== 'dashboard') {
+      setCurrentScreen('dashboard');
+    }
+
+    if (!user && currentScreen === 'dashboard') {
+      setCurrentScreen('welcome');
+    }
+  }, [user, loading, splashComplete, currentScreen]);
 
   const handleLogout = async () => {
     await signOut();
@@ -66,14 +64,15 @@ const Index = () => {
       <AuthScreen
         mode={currentScreen}
         onBack={() => setCurrentScreen('welcome')}
-        onToggleMode={() => setCurrentScreen(currentScreen === 'login' ? 'signup' : 'login')}
+        onToggleMode={() =>
+          setCurrentScreen(currentScreen === 'login' ? 'signup' : 'login')
+        }
       />
     );
   }
-
- 
 
   return <Dashboard onLogout={handleLogout} />;
 };
 
 export default Index;
+
