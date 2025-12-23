@@ -12,12 +12,11 @@ const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>('splash');
   const [splashComplete, setSplashComplete] = useState(false);
 
-  // Splash complete handler
   const handleSplashComplete = () => {
     setSplashComplete(true);
   };
 
-  // After splash: decide initial screen
+  // Decide screen after splash
   useEffect(() => {
     if (!splashComplete || loading) return;
 
