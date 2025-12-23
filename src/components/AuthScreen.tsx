@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { ForgotPasswordDialog } from '@/components/ForgotPasswordDialog';
+
 import { toast } from 'sonner';
 import foxerLogo from '@/assets/foxer-logo.png';
 
@@ -23,8 +23,7 @@ export function AuthScreen({ mode, onBack, onToggleMode }: AuthScreenProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
-
+ 
   const isLogin = mode === 'login';
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -124,15 +123,7 @@ export function AuthScreen({ mode, onBack, onToggleMode }: AuthScreenProps) {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="block text-sm font-medium">Password</label>
-                {isLogin && (
-                  <button
-                    type="button"
-                    onClick={() => setForgotPasswordOpen(true)}
-                    className="text-xs text-primary hover:underline"
-                  >
-                    Forgot password?
-                  </button>
-                )}
+               
               </div>
               <div className="relative">
                 <Input
@@ -175,6 +166,18 @@ export function AuthScreen({ mode, onBack, onToggleMode }: AuthScreenProps) {
               className="w-full mt-6"
               disabled={isLoading}
             >
+              {isLogin && (
+  <p className="mt-3 text-sm text-gray-500 text-center">
+    Forgot your password?{" "}
+    <a
+      href="mailto:satyshivansh39@gmail.com?subject=Foxer%20Password%20Help"
+      className="text-blue-600 font-medium hover:underline"
+    >
+      Contact support@foxer.in
+    </a>
+  </p>
+)}
+
               {isLoading ? (
                 <span className="animate-pulse-subtle">
                   {isLogin ? 'Signing in...' : 'Creating account...'}
@@ -199,10 +202,7 @@ export function AuthScreen({ mode, onBack, onToggleMode }: AuthScreenProps) {
       </div>
 
       {/* Forgot Password Dialog */}
-      <ForgotPasswordDialog
-        open={forgotPasswordOpen}
-        onOpenChange={setForgotPasswordOpen}
-      />
+     
     </div>
   );
 }
