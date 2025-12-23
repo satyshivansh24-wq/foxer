@@ -3,10 +3,10 @@ import { SplashScreen } from '@/components/SplashScreen';
 import { WelcomeScreen } from '@/components/WelcomeScreen';
 import { AuthScreen } from '@/components/AuthScreen';
 import { Dashboard } from '@/components/Dashboard';
-import { ResetPasswordScreen } from '@/components/ResetPasswordScreen';
+// import { ResetPasswordScreen } from '@/components/ResetPasswordScreen';
 import { useAuth } from '@/contexts/AuthContext';
 
-type Screen = 'splash' | 'welcome' | 'login' | 'signup' | 'dashboard' | 'reset-password';
+type Screen = 'splash' | 'welcome' | 'login' | 'signup' | 'dashboard';
 
 const Index = () => {
   const { user, loading, signOut } = useAuth();
@@ -23,16 +23,7 @@ const Index = () => {
     if (splashComplete && !loading) {
       // Check if user is in password reset flow from email link
       // Parameters can be in hash (#) or query string (?)
-      const hash = window.location.hash.substring(1);
-      const hashParams = new URLSearchParams(hash);
-      const searchParams = new URLSearchParams(window.location.search);
-
-      const type = hashParams.get('type') || searchParams.get('type');
-      const token = hashParams.get('access_token') || searchParams.get('token');
-      const error = hashParams.get('error') || searchParams.get('error');
-
-      if ((type === 'recovery' || error) && (token || error)) {
-        setCurrentScreen('reset-password');
+     
       } else if (user) {
         setCurrentScreen('dashboard');
       } else {
@@ -80,14 +71,7 @@ const Index = () => {
     );
   }
 
-  if (currentScreen === 'reset-password') {
-    return (
-      <ResetPasswordScreen
-        onBack={() => setCurrentScreen('login')}
-        onSuccess={() => setCurrentScreen('login')}
-      />
-    );
-  }
+ 
 
   return <Dashboard onLogout={handleLogout} />;
 };
