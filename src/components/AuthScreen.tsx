@@ -108,72 +108,74 @@ export function AuthScreen({ mode, onBack, onToggleMode }: AuthScreenProps) {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in-up">
-            <div>
-              <label className="block text-sm font-medium mb-2">Email</label>
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-              />
-            </div>
+         <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in-up">
+  <div>
+    <label className="block text-sm font-medium mb-2">Email</label>
+    <Input
+      type="email"
+      placeholder="Enter your email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      autoComplete="email"
+    />
+  </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium">Password</label>
-               
-              </div>
-              <div className="relative">
-                <Input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete={isLogin ? 'current-password' : 'new-password'}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-accent transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5 text-muted-foreground" /> : <Eye className="w-5 h-5 text-muted-foreground" />}
-                </button>
-              </div>
-            </div>
+  <div>
+    <label className="block text-sm font-medium mb-2">Password</label>
+    <div className="relative">
+      <Input
+        type={showPassword ? 'text' : 'password'}
+        placeholder="Enter your password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        autoComplete={isLogin ? 'current-password' : 'new-password'}
+      />
+      <button
+        type="button"
+        onClick={() => setShowPassword(!showPassword)}
+        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-accent transition-colors"
+      >
+        {showPassword ? (
+          <EyeOff className="w-5 h-5 text-muted-foreground" />
+        ) : (
+          <Eye className="w-5 h-5 text-muted-foreground" />
+        )}
+      </button>
+    </div>
+  </div>
 
-            {!isLogin && (
-              <div>
-                <label className="block text-sm font-medium mb-2">Confirm Password</label>
-                <Input
-                  type="password"
-                  placeholder="Confirm your password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  autoComplete="new-password"
-                />
-              </div>
-            )}
-
-            {error && (
-              <p className="text-sm text-destructive text-center">{error}</p>
-            )}
-
-           <Button
-  type="submit"
-  variant="hero"
-  className="w-full mt-6"
-  disabled={isLoading}
->
-  {isLoading ? (
-    <span className="animate-pulse-subtle">
-      {isLogin ? 'Signing in...' : 'Creating account...'}
-    </span>
-  ) : (
-    isLogin ? 'Sign In' : 'Create Account'
+  {!isLogin && (
+    <div>
+      <label className="block text-sm font-medium mb-2">Confirm Password</label>
+      <Input
+        type="password"
+        placeholder="Confirm your password"
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        autoComplete="new-password"
+      />
+    </div>
   )}
-</Button>
+
+  {error && (
+    <p className="text-sm text-destructive text-center">{error}</p>
+  )}
+
+  <Button
+    type="submit"
+    variant="hero"
+    className="w-full mt-6"
+    disabled={isLoading}
+  >
+    {isLoading ? (
+      <span className="animate-pulse-subtle">
+        {isLogin ? 'Signing in...' : 'Creating account...'}
+      </span>
+    ) : (
+      isLogin ? 'Sign In' : 'Create Account'
+    )}
+  </Button>
+</form>
 
 {isLogin && (
   <p className="mt-4 text-sm text-gray-500 text-center">
@@ -186,17 +188,6 @@ export function AuthScreen({ mode, onBack, onToggleMode }: AuthScreenProps) {
     </a>
   </p>
 )}
-
-
-              {isLoading ? (
-                <span className="animate-pulse-subtle">
-                  {isLogin ? 'Signing in...' : 'Creating account...'}
-                </span>
-              ) : (
-                isLogin ? 'Sign In' : 'Create Account'
-              )}
-            </Button>
-          </form>
 
           {/* Toggle */}
           <p className="text-center text-sm text-muted-foreground mt-8">
