@@ -46,6 +46,13 @@ export function WelcomeScreen({ onLogin, onSignup }: WelcomeScreenProps) {
             Sign In
           </Button>
         </div>
+        {/* Beta Disclaimer */}
+<footer className="mt-10 text-center text-xs text-muted-foreground">
+  © 2025 Foxer • Beta Version
+  <br />
+  Storage limits are subject to fair usage.
+</footer>
+
       </div>
     </div>
   );
