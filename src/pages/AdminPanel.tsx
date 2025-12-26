@@ -1,112 +1,107 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Users, UserPlus, Shield, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Users, Shield, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-interface UserProfile {
+interface User {
   id: string;
   user_id: string;
   email: string | null;
   display_name: string | null;
-  created_at: string;
-}
-
-interface UserWithRole extends UserProfile {
   role: string;
+  created_at: string;
 }
 
 const AdminPanel = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { isAdmin, loading: roleLoading } = useUserRole();
-  const [users, setUsers] = useState<UserWithRole[]>([]);
+
+  const [users, setUsers] = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
+
   const [stats, setStats] = useState({
-    totalUsers: 0,
+    total: 0,
     admins: 0,
-    regularUsers: 0
+    users: 0
   });
 
+  // 🔐 Access guard
   useEffect(() => {
-    if (!authLoading && !roleLoading) {
-      if (!user) {
-        navigate('/');
-        return;
-      }
-      if (!isAdmin) {
-        toast.error('Access denied. Admin only.');
-        navigate('/');
-        return;
-      }
-      fetchUsers();
-    }
-  }, [user, isAdmin, authLoading, roleLoading, navigate]);
+    if (authLoading || roleLoading) return;
 
+    if (!user) {
+      navigate('/');
+      return;
+    }
+
+    if (!isAdmin) {
+      toast.error('Access denied. Admin only.');
+      navigate('/');
+      return;
+    }
+
+    fetchUsers();
+  }, [authLoading, roleLoading, isAdmin, user]);
+
+  // 📥 Fetch users
   const fetchUsers = async () => {
     setLoadingUsers(true);
     try {
-      // Fetch all profiles
-      const { data: profiles, error: profilesError } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id, user_id, email, display_name, role, created_at')
         .order('created_at', { ascending: false });
 
-      if (profilesError) throw profilesError;
+      if (error) throw error;
 
-      // Fetch all roles
-      const { data: roles, error: rolesError } = await supabase
-        .from('user_roles')
-        .select('*');
+      const list = data || [];
+      setUsers(list);
 
-      if (rolesError) throw rolesError;
+      const adminCount = list.filter(u => u.role === 'admin').length;
 
-      // Combine profiles with roles
-      const usersWithRoles: UserWithRole[] = (profiles || []).map((profile: UserProfile) => {
-        const userRole = roles?.find(r => r.user_id === profile.user_id);
-        return {
-          ...profile,
-          role: userRole?.role || 'user'
-        };
-      });
-
-      setUsers(usersWithRoles);
-
-      // Calculate stats
-      const adminCount = usersWithRoles.filter(u => u.role === 'admin').length;
       setStats({
-        totalUsers: usersWithRoles.length,
+        total: list.length,
         admins: adminCount,
-        regularUsers: usersWithRoles.length - adminCount
+        users: list.length - adminCount
       });
-    } catch (error) {
-      console.error('Error fetching users:', error);
+    } catch (err) {
+      console.error(err);
       toast.error('Failed to load users');
     } finally {
       setLoadingUsers(false);
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-IN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+  const formatDate = (d: string) =>
+    new Date(d).toLocaleString('en-IN', {
+      dateStyle: 'medium',
+      timeStyle: 'short'
     });
-  };
 
   if (authLoading || roleLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
       </div>
     );
   }
@@ -114,16 +109,20 @@ const AdminPanel = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border">
+      <header className="border-b sticky top-0 bg-background z-10">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-bold">Admin Panel</h1>
-          </div>
-          <Button variant="outline" size="sm" className="ml-auto" onClick={fetchUsers}>
+          <Shield className="h-6 w-6 text-primary" />
+          <h1 className="text-xl font-bold">Admin Panel</h1>
+
+          <Button
+            variant="outline"
+            size="sm"
+            className="ml-auto"
+            onClick={fetchUsers}
+          >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
           </Button>
@@ -131,50 +130,32 @@ const AdminPanel = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        {/* Stats Cards */}
+        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Total Users
-              </CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+            <CardHeader>
+              <CardTitle>Total Users</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.totalUsers}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Registered users
-              </p>
+            <CardContent className="text-3xl font-bold">
+              {stats.total}
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Admins
-              </CardTitle>
-              <Shield className="h-4 w-4 text-muted-foreground" />
+            <CardHeader>
+              <CardTitle>Admins</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-primary">{stats.admins}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Admin users
-              </p>
+            <CardContent className="text-3xl font-bold text-primary">
+              {stats.admins}
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Regular Users
-              </CardTitle>
-              <UserPlus className="h-4 w-4 text-muted-foreground" />
+            <CardHeader>
+              <CardTitle>Regular Users</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.regularUsers}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Standard users
-              </p>
+            <CardContent className="text-3xl font-bold">
+              {stats.users}
             </CardContent>
           </Card>
         </div>
@@ -186,40 +167,38 @@ const AdminPanel = () => {
           </CardHeader>
           <CardContent>
             {loadingUsers ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+              <div className="flex justify-center py-10">
+                <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-primary" />
               </div>
-            ) : users.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">No users found</p>
             ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Display Name</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Signup Date</TableHead>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Joined</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {users.map(u => (
+                    <TableRow key={u.id}>
+                      <TableCell>{u.email}</TableCell>
+                      <TableCell>{u.display_name || '-'}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            u.role === 'admin' ? 'default' : 'secondary'
+                          }
+                        >
+                          {u.role}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{formatDate(u.created_at)}</TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {users.map((u) => (
-                      <TableRow key={u.id}>
-                        <TableCell className="font-medium">{u.email || 'N/A'}</TableCell>
-                        <TableCell>{u.display_name || '-'}</TableCell>
-                        <TableCell>
-                          <Badge variant={u.role === 'admin' ? 'default' : 'secondary'}>
-                            {u.role}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {formatDate(u.created_at)}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                  ))}
+                </TableBody>
+              </Table>
             )}
           </CardContent>
         </Card>
