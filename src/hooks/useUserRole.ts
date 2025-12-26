@@ -8,34 +8,30 @@ export function useUserRole() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkAdminRole = async () => {
+    const fetchRole = async () => {
       if (!user) {
         setIsAdmin(false);
         setLoading(false);
         return;
       }
 
-      try {
-        const { data, error } = await supabase.rpc('has_role', {
-          _user_id: user.id,
-          _role: 'admin'
-        });
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
 
-        if (error) {
-          console.error('Error checking role:', error);
-          setIsAdmin(false);
-        } else {
-          setIsAdmin(data === true);
-        }
-      } catch (err) {
-        console.error('Error:', err);
+      if (error) {
+        console.error('Role fetch error:', error);
         setIsAdmin(false);
-      } finally {
-        setLoading(false);
+      } else {
+        setIsAdmin(data?.role === 'admin');
       }
+
+      setLoading(false);
     };
 
-    checkAdminRole();
+    fetchRole();
   }, [user]);
 
   return { isAdmin, loading };
