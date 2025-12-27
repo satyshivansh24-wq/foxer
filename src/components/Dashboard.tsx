@@ -48,6 +48,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
+  const { signOut } = useAuth();
   const { isAdmin, loading: roleLoading } = useUserRole();
     // ⛔ WAIT until role is fetched
   if (roleLoading) {
@@ -318,7 +319,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
               {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
             </button>
             <button 
-              onClick={onLogout}
+              onClick={signOut}
               className="p-2 rounded-lg hover:bg-accent transition-colors"
             >
               <LogOut className="w-5 h-5" />
