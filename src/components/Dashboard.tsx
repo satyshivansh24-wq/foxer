@@ -318,12 +318,36 @@ export function Dashboard({ onLogout }: DashboardProps) {
             >
               {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
             </button>
-            <button 
-              onClick={signOut}
-              className="p-2 rounded-lg hover:bg-accent transition-colors"
-            >
-              <LogOut className="w-5 h-5" />
-            </button>
+           <AlertDialog>
+  <AlertDialogTrigger asChild>
+    <button className="p-2 rounded-lg hover:bg-accent transition-colors">
+      <LogOut className="w-5 h-5" />
+    </button>
+  </AlertDialogTrigger>
+
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
+      <AlertDialogDescription>
+        Are you sure you want to logout from Foxer?
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+
+    <AlertDialogFooter>
+      <AlertDialogCancel>Cancel</AlertDialogCancel>
+      <AlertDialogAction
+        onClick={async () => {
+          const { signOut } = useAuth();
+          await signOut();
+        }}
+        className="bg-destructive text-destructive-foreground"
+      >
+        Logout
+      </AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+
           </div>
         </div>
 
