@@ -1,3 +1,4 @@
+import { supabase } from '@/integrations/supabase/client';
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Plus, FileText, Image, Video, File, FolderOpen, Sun, Moon, LogOut, Grid, List, Trash2, Download, X, Folder, ChevronRight, Home, Edit2, FolderPlus, Filter, Calendar, HardDrive, FileType, Shield } from 'lucide-react';
@@ -318,35 +319,19 @@ export function Dashboard({ onLogout }: DashboardProps) {
             >
               {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
             </button>
-           <AlertDialog>
-  <AlertDialogTrigger asChild>
-    <button className="p-2 rounded-lg hover:bg-accent transition-colors">
-      <LogOut className="w-5 h-5" />
-    </button>
-  </AlertDialogTrigger>
+         <button
+  onClick={async () => {
+    const ok = window.confirm("Are you sure you want to logout from Foxer?");
+    if (!ok) return;
 
-  <AlertDialogContent>
-    <AlertDialogHeader>
-      <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
-      <AlertDialogDescription>
-        Are you sure you want to logout from Foxer?
-      </AlertDialogDescription>
-    </AlertDialogHeader>
+    await supabase.auth.signOut();
+    window.location.reload();
+  }}
+  className="p-2 rounded-lg hover:bg-accent transition-colors"
+>
+  <LogOut className="w-5 h-5" />
+</button>
 
-    <AlertDialogFooter>
-      <AlertDialogCancel>Cancel</AlertDialogCancel>
-      <AlertDialogAction
-        onClick={async () => {
-          const { signOut } = useAuth();
-          await signOut();
-        }}
-        className="bg-destructive text-destructive-foreground"
-      >
-        Logout
-      </AlertDialogAction>
-    </AlertDialogFooter>
-  </AlertDialogContent>
-</AlertDialog>
 
           </div>
         </div>
