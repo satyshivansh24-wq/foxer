@@ -62,8 +62,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-  };
+  const signOut = async () => {
+  const confirmLogout = window.confirm(
+    "Are you sure you want to logout from Foxer?"
+  );
+
+  if (!confirmLogout) return;
+
+  await supabase.auth.signOut();
+};
+
 
   const resetPassword = async (email: string) => {
     const redirectUrl = `${window.location.origin}/?mode=reset-password`;
