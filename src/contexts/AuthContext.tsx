@@ -62,7 +62,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-  const signOut = async () => {
   const confirmLogout = window.confirm(
     "Are you sure you want to logout from Foxer?"
   );
