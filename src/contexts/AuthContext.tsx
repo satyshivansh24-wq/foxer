@@ -61,12 +61,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error as Error | null };
   };
 
-  const signOut = async () => {
-  const confirmLogout = window.confirm(
-    "Are you sure you want to logout from Foxer?"
-  );
+ const signOut = async () => {
+  const ok = window.confirm("Are you sure you want to logout from Foxer?");
 
-  if (!confirmLogout) return;
+  if (!ok) return;
 
   await supabase.auth.signOut();
 };
