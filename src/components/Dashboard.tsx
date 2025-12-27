@@ -48,7 +48,12 @@ export function Dashboard({ onLogout }: DashboardProps) {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
-  const { isAdmin } = useUserRole();
+  const { isAdmin, loading: roleLoading } = useUserRole();
+    // ⛔ WAIT until role is fetched
+  if (roleLoading) {
+    return null;
+  }
+
   const { files, loading: filesLoading, uploadFile, deleteFile, getFileUrl, getCategoryCounts, getFilesInFolder, getTotalStorageUsed, getStorageLimit, canUploadFile, renameFile, moveFile } = useFiles();
   const { folders, loading: foldersLoading, createFolder, renameFolder, deleteFolder, moveFolder, getFoldersInFolder } = useFolders();
   const [searchQuery, setSearchQuery] = useState('');
