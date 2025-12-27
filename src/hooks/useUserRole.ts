@@ -8,10 +8,10 @@ export function useUserRole() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (authLoading) return; // ⬅️ WAIT FOR AUTH
+    if (authLoading) return;
 
     const fetchRole = async () => {
-      if (!user?.email) {
+      if (!user?.id) {
         setIsAdmin(false);
         setLoading(false);
         return;
@@ -20,7 +20,7 @@ export function useUserRole() {
       const { data, error } = await supabase
         .from('profiles')
         .select('role')
-        .eq('email', user.email)
+        .eq('id', user.id)   // ✅ FIX HERE
         .single();
 
       if (!error && data?.role === 'admin') {
