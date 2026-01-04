@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
+
 export interface FileRecord {
   id: string;
   user_id: string;
@@ -16,7 +17,7 @@ export interface FileRecord {
   updated_at: string;
 }
 
-const STORAGE_LIMIT_BYTES = 10 * 1024 * 1024 * 1024; // 10GB
+
 const MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024; // 100MB per file
 
 // Allowlist of safe file extensions
