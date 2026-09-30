@@ -52,7 +52,10 @@ export function WelcomeScreen({ onLogin, onSignup }: WelcomeScreenProps) {
   <br />
   Storage limits are subject to fair usage.
   <br/>
-  Design & Developed by : Saty Shivansh 
+  <h2>
+    Design & Developed by : Saty Shivansh 
+  </h2>
+  
 </footer>
 
       </div>
