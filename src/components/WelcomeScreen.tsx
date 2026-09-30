@@ -51,6 +51,7 @@ export function WelcomeScreen({ onLogin, onSignup }: WelcomeScreenProps) {
   © 2025 Foxer • Beta Version
   <br />
   Storage limits are subject to fair usage.
+  <br/>
   Design & Developed by : Saty Shivansh 
 </footer>
 
